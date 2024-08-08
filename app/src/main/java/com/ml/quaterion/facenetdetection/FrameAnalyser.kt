@@ -16,6 +16,7 @@ package com.ml.quaterion.facenetdetection
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -31,11 +32,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 // Analyser class to process frames and produce detections.
-class FrameAnalyser( context: Context ,
+class FrameAnalyser( var context: Context ,
                      private var boundingBoxOverlay: BoundingBoxOverlay ,
                      private var model: FaceNetModel
                      ) : ImageAnalysis.Analyzer {
@@ -68,6 +72,10 @@ class FrameAnalyser( context: Context ,
 
     // <-------------------------------------------------------->
 
+    private var isIntentStarted = false // Flag to track intent execution
+    private var canSaveFaceData = true
+    private var lastSaveTime = 0L
+    private val saveInterval = 10000 // 10 seconds
 
     init {
         boundingBoxOverlay.drawMaskLabel = isMaskDetectionOn
@@ -194,6 +202,17 @@ class FrameAnalyser( context: Context ,
                                 maskLabel
                             )
                         )
+                        // Call saveFaceData if the face is identified
+                        if (bestScoreUserName != "Unknown" ) {
+                            val currentTime = System.currentTimeMillis()
+                            if (currentTime - lastSaveTime > saveInterval) {
+                                if (canSaveFaceData) {
+                                    saveFaceData(bestScoreUserName)
+                                    lastSaveTime = currentTime
+                                    canSaveFaceData = false
+                                }
+                            }
+                        }
                     }
                     else {
                         // Inform the user to remove the mask
@@ -228,6 +247,29 @@ class FrameAnalyser( context: Context ,
         return sqrt( x1.mapIndexed{ i , xi -> (xi - x2[ i ]).pow( 2 ) }.sum() )
     }
 
+    private fun saveFaceData(name: String) {
+        val sharedPreferences = context.getSharedPreferences("FaceData", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val timestamp = System.currentTimeMillis()
+        val formattedDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
+
+        // Generate a unique key for each entry
+        val key = "face_data_$timestamp"
+
+        // Save the data
+        editor.putString(key, "$name,$formattedDate")
+        editor.apply()
+
+        // Optionally, log the data
+        Log.d("FaceData", "Saved face data: Name=$name, Time=$formattedDate")
+
+        // Execute the intent only if it hasn't been started already
+            val intent = Intent(context, FaceDataActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(intent)
+
+    }
 
     // Compute the cosine of the angle between x1 and x2.
     private fun cosineSimilarity( x1 : FloatArray , x2 : FloatArray ) : Float {

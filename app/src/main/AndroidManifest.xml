@@ -6,6 +6,8 @@
         android:name="android.hardware.camera"
         android:required="true"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -16,7 +18,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".StartingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,6 +26,12 @@
             </intent-filter>
         </activity>
 
+        <!-- Add this activity declaration -->
+        <activity
+            android:name=".FaceDataActivity">
+        </activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".RegisterFaceDataActivity" />
 
         <uses-native-library
             android:name="libOpenCL.so"
@@ -36,7 +44,6 @@
         <uses-native-library
             android:name="libOpenCL-pixel.so"
             android:required="false" />
-
 
     </application>
 

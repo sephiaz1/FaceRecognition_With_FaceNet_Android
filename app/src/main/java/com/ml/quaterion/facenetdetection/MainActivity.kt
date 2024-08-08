@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
     private val modelInfo = Models.FACENET
 
     // Camera Facing
-    private val cameraFacing = CameraSelector.LENS_FACING_BACK
+    private val cameraFacing = CameraSelector.LENS_FACING_FRONT
 
     // <---------------------------------------------------------------->
 
