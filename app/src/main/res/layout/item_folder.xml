@@ -3,11 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:padding="8dp">
 
     <TextView
-        android:id="@+id/folderName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp" />
+        android:id="@+id/folder_name"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/deleteButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="X" />
 </LinearLayout>

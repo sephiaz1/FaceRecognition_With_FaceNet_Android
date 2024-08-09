@@ -9,12 +9,28 @@
         android:id="@+id/folderNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter folder name" />
+        android:hint="Folder Name" />
 
     <Button
         android:id="@+id/addPhotosButton"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add Photos" />
 
+    <Button
+        android:id="@+id/takePhotoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take Photo" />
+
+    <!-- Add a GridView to display selected photos -->
+    <GridView
+        android:id="@+id/selectedPhotosGridView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:numColumns="3"
+        android:verticalSpacing="4dp"
+        android:horizontalSpacing="4dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center" />
 </LinearLayout>
