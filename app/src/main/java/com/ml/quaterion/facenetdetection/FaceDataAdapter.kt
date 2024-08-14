@@ -1,25 +1,33 @@
-package com.ml.quaterion.facenetdetection
-
-import android.content.Context
+// FaceDataAdapter.kt
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.ml.quaterion.facenetdetection.FaceData
+import com.ml.quaterion.facenetdetection.R
 
-class FaceDataAdapter(context: Context, private val faceDataList: List<Pair<String, String>>) :
-    ArrayAdapter<Pair<String, String>>(context, 0, faceDataList) {
+class FaceDataAdapter(private val faceDataList: List<FaceData>) : RecyclerView.Adapter<FaceDataAdapter.FaceDataViewHolder>() {
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_face_data, parent, false)
-
-        val faceData = faceDataList[position]
-        val faceNameTextView: TextView = view.findViewById(R.id.itemFaceName)
-        val timestampTextView: TextView = view.findViewById(R.id.itemTimestamp)
-
-        faceNameTextView.text = faceData.first ?: "Unknown"
-        timestampTextView.text = faceData.second ?: "N/A"
-
-        return view
+    inner class FaceDataViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val textName: TextView = itemView.findViewById(R.id.textName)
+        val textDate: TextView = itemView.findViewById(R.id.textDate)
+        val textRegistIn: TextView = itemView.findViewById(R.id.textRegistIn)
+        val textRegistOut: TextView = itemView.findViewById(R.id.textRegistOut)
     }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FaceDataViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_face_data, parent, false)
+        return FaceDataViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: FaceDataViewHolder, position: Int) {
+        val faceData = faceDataList[position]
+        holder.textName.text = faceData.name
+        holder.textDate.text = faceData.date
+        holder.textRegistIn.text = faceData.registIn
+        holder.textRegistOut.text = faceData.registOut
+    }
+
+    override fun getItemCount(): Int = faceDataList.size
 }

@@ -77,16 +77,18 @@ class RegisterFaceDataActivity : AppCompatActivity() {
         listView.adapter = adapter
     }
 
-    private fun showCreateFolderDialog() {
+    private lateinit var imageAdapter: ImageAdapter
 
+    private fun showCreateFolderDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_create_folder, null)
         folderNameEditText = dialogView.findViewById(R.id.folderNameEditText)
         val addPhotosButton: Button = dialogView.findViewById(R.id.addPhotosButton)
         val takePhotoButton: Button = dialogView.findViewById(R.id.takePhotoButton)
         val gridView: GridView = dialogView.findViewById(R.id.selectedPhotosGridView)
 
-        val adapter = ImageAdapter(this, selectedImages)
-        gridView.adapter = adapter
+        imageAdapter = ImageAdapter(this, selectedImages)
+        gridView.adapter = imageAdapter
+        imageAdapter.notifyDataSetChanged() // Notify adapter to refresh GridView
 
         val dialog = AlertDialog.Builder(this)
             .setTitle("Create Folder and Add Photos")
@@ -95,12 +97,18 @@ class RegisterFaceDataActivity : AppCompatActivity() {
                 val folderName = folderNameEditText.text.toString().trim()
                 if (folderName.isNotEmpty() && rootUri != null) {
                     createFolderAndSavePhotos(folderName)
-                } else {
+                    // Clear the selected images after creating the folder
+                    selectedImages.clear()
+                    imageAdapter.notifyDataSetChanged()
+                }  else {
                     Toast.makeText(this, "Please select a directory and enter a folder name.", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancel", null)
-            .create()
+            .setNegativeButton("Cancel") { _, _ ->
+                // Clear the selected images when canceling
+                selectedImages.clear()
+                imageAdapter.notifyDataSetChanged()
+            }            .create()
 
         dialog.show()
 
@@ -154,21 +162,28 @@ class RegisterFaceDataActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            data?.let { intent ->
-                val clipData = intent.clipData
-                selectedImages.clear()
-                if (clipData != null) {
-                    for (i in 0 until clipData.itemCount) {
-                        selectedImages.add(clipData.getItemAt(i).uri)
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
+                1 -> { // Image Picker
+                    data?.let { intent ->
+                        val clipData = intent.clipData
+                        selectedImages.clear()
+                        if (clipData != null) {
+                            for (i in 0 until clipData.itemCount) {
+                                selectedImages.add(clipData.getItemAt(i).uri)
+                            }
+                        } else {
+                            intent.data?.let { selectedImages.add(it) }
+                        }
+                        imageAdapter.notifyDataSetChanged() // Notify adapter to refresh GridView
                     }
-                } else {
-                    intent.data?.let { selectedImages.add(it) }
+                }
+                2 -> { // Camera
+                    val photoUri = Uri.fromFile(File(currentPhotoPath))
+                    selectedImages.add(photoUri)
+                    imageAdapter.notifyDataSetChanged() // Notify adapter to refresh GridView
                 }
             }
-        } else if (requestCode == 2 && resultCode == RESULT_OK) {
-            val photoUri = Uri.fromFile(File(currentPhotoPath))
-            selectedImages.add(photoUri)
         }
     }
 
@@ -265,9 +280,10 @@ class RegisterFaceDataActivity : AppCompatActivity() {
 
 
     }
+
 private class ImageAdapter(
     private val context: Context,
-    private val imageUris: List<Uri>
+    private val imageUris: MutableList<Uri>
 ) : BaseAdapter() {
 
     override fun getCount(): Int = imageUris.size
@@ -280,7 +296,6 @@ private class ImageAdapter(
         val imageView = convertView ?: ImageView(context)
         val uri = imageUris[position]
 
-        // Make sure to cast the View to ImageView
         (imageView as ImageView).apply {
             layoutParams = ViewGroup.LayoutParams(200, 200)
             scaleType = ImageView.ScaleType.CENTER_CROP

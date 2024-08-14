@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val isRegistIn = intent.getBooleanExtra("isRegistIn", true)
 
         // Remove the status bar to have a full screen experience
         // See this answer on SO -> https://stackoverflow.com/a/68152688/10878733
@@ -124,7 +125,7 @@ class MainActivity : AppCompatActivity() {
         boundingBoxOverlay.setZOrderOnTop( true )
 
         faceNetModel = FaceNetModel( this , modelInfo , useGpu , useXNNPack )
-        frameAnalyser = FrameAnalyser( this , boundingBoxOverlay , faceNetModel )
+        frameAnalyser = FrameAnalyser( this , boundingBoxOverlay , faceNetModel, isRegistIn)
         fileReader = FileReader( faceNetModel )
 
 

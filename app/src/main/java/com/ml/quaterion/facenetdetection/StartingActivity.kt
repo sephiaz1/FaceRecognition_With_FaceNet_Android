@@ -12,15 +12,31 @@ class StartingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_starting)
 
         val registerButton = findViewById<Button>(R.id.registerButton)
-        val attendanceButton = findViewById<Button>(R.id.attendanceButton)
+        val registInButton = findViewById<Button>(R.id.registInButton)
+        val registOutButton = findViewById<Button>(R.id.registOutButton)
+
+        val checkAttendanceButton = findViewById<Button>(R.id.checkAttendanceButton)
 
         registerButton.setOnClickListener {
             val intent = Intent(this, RegisterFaceDataActivity::class.java)
             startActivity(intent)
         }
 
-        attendanceButton.setOnClickListener {
+        registInButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("isRegistIn", true) // Pass true for "regist in"
+            startActivity(intent)
+        }
+
+
+        registOutButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("isRegistIn", false) // Pass false for "regist out"
+            startActivity(intent)
+        }
+
+        checkAttendanceButton.setOnClickListener {
+            val intent = Intent(this, FaceDataActivity::class.java)
             startActivity(intent)
         }
     }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/imageViewSuccessIcon"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:src="@drawable/baseline_check_circle_24"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/textViewScanMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scan successful"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:paddingTop="10dp" />
+
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp" />
+
+    <Button
+        android:id="@+id/buttonRescan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rescan" />
+
+    <Button
+        android:id="@+id/buttonTakeAttendance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Take Attendance"
+        android:layout_marginTop="10dp"/>
+</LinearLayout>
