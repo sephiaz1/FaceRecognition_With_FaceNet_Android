@@ -4,6 +4,7 @@ package com.ml.quaterion.facenetdetection
 data class FaceData(
     val name: String,
     val date: String,
+    val kantor: String,
     val registIn: String,
-    val registOut: String
+    val registOut: String,
 )

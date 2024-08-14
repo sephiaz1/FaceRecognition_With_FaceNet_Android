@@ -3,6 +3,7 @@ package com.ml.quaterion.facenetdetection
 import FaceDataAdapter
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +18,7 @@ class FaceDataActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_face_data)
-
+        logSharedPreferences()
         recyclerView = findViewById(R.id.recyclerViewFaceData)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -49,12 +50,19 @@ class FaceDataActivity : AppCompatActivity() {
             val data = sharedPreferences.getString(key, null)
             if (data != null) {
                 val parts = data.split(", ")
-                if (parts.size >= 4) {
-                    val name = parts[0].substringAfter("Name: ")
-                    val date = parts[1].substringAfter("Date: ")
-                    val registIn = parts[2].substringAfter("Regist In: ")
-                    val registOut = parts[3].substringAfter("Regist Out: ")
-                    faceDataList.add(FaceData(name, date, registIn, registOut))
+                if (parts.size == 5) {
+                    try {
+                        val name = parts[0].substringAfter("Name: ")
+                        val date = parts[1].substringAfter("Date: ")
+                        val kantor = parts[2].substringAfter("Kantor:")
+                        val registIn = parts[3].substringAfter("Regist In: ")
+                        val registOut = parts[4].substringAfter("Regist Out: ")
+                        faceDataList.add(FaceData(name, date, kantor, registIn, registOut))
+                    } catch (e: Exception) {
+                        Log.e("FaceDataActivity", "Error parsing data for key: $key", e)
+                    }
+                } else {
+                    Log.e("FaceDataActivity", "Unexpected data format for key: $key")
                 }
             }
         }
@@ -66,9 +74,18 @@ class FaceDataActivity : AppCompatActivity() {
         val editor = sharedPreferences.edit()
         editor.clear()
         editor.apply()
+        Log.d("SharedPreferences", "SP Deleted")
 
         // Refresh the data in the adapter
         faceDataList.clear()
         faceDataAdapter.notifyDataSetChanged()
+    }
+    private fun logSharedPreferences() {
+        val sharedPreferences = getSharedPreferences("FaceData", MODE_PRIVATE)
+        val allEntries = sharedPreferences.all
+
+        for ((key, value) in allEntries) {
+            Log.d("SharedPreferences", "Key: $key, Value: $value")
+        }
     }
 }

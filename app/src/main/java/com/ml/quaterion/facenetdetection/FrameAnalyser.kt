@@ -51,7 +51,9 @@
                          private val isRegistIn: Boolean,
         private var currentBranch: String?
     ) : ImageAnalysis.Analyzer {
-
+        fun updateCurrentBranch(branch: String?) {
+            currentBranch = branch
+        }
         private val realTimeOpts = FaceDetectorOptions.Builder()
                 .setPerformanceMode( FaceDetectorOptions.PERFORMANCE_MODE_FAST )
                 .build()
@@ -268,11 +270,13 @@
             val formattedTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
             val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(timestamp))
 
+            val location = "${currentBranch}"
+
             // Use a single key for the face data entry
             val key = "face_data_${name}_${dateKey}"
 
             // Get existing data if any
-            val existingData = sharedPreferences.getString(key, "Name: $name, Date: $dateKey, Regist In: -, Regist Out: -")
+            val existingData = sharedPreferences.getString(key, "Name: $name, Date: $dateKey, Kantor: $location, Regist In: -, Regist Out: -")
 
             // Update the data based on whether it's "Regist In" or "Regist Out"
             if (isRegistIn) {
@@ -314,7 +318,7 @@
 
             // Set the dialog content
             nameText.text = name
-            locationText.text = ""+currentBranch
+            locationText.text = currentBranch
             // Create the AlertDialog
             val builder = AlertDialog.Builder(context)
                 .setView(dialogView)

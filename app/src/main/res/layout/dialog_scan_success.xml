@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:paddingBottom="10dp"
-        android:paddingTop="10dp" />
+ />
 
     <Button
         android:id="@+id/buttonRescan"

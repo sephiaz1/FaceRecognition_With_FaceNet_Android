@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         private lateinit var locationCallback: LocationCallback
         private var currentBranch: String? = null
             // <----------------------- User controls --------------------------->
-
+    private lateinit var mainActivity: MainActivity;
     // Use the device's GPU to perform faster computations.
     // Refer https://www.tensorflow.org/lite/performance/gpu
     private val useGpu = true
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isRegistIn = intent.getBooleanExtra("isRegistIn", true)
-
+        mainActivity=this
         // Initialize the location client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         locationCallback = object : LocationCallback() {
@@ -437,12 +437,13 @@ class MainActivity : AppCompatActivity() {
             if (location.latitude in latRange.first..latRange.second &&
                 location.longitude in lonRange.first..lonRange.second) {
                 currentBranch = branch
+                frameAnalyser.updateCurrentBranch(currentBranch)  // Update the FrameAnalyser instance
                 Logger.log("User is at $currentBranch")
-                Toast.makeText(
-                    this,
-                    "Current Location: Lat: ${location.latitude}, Lon: ${location.longitude}, Branch: $currentBranch",
-                    Toast.LENGTH_LONG
-                ).show()
+//                Toast.makeText(
+//                    this,
+//                    "Current Location: Lat: ${location.latitude}, Lon: ${location.longitude}, Branch: $currentBranch",
+//                    Toast.LENGTH_LONG
+//                ).show()
 
                 break
             }
@@ -450,6 +451,7 @@ class MainActivity : AppCompatActivity() {
         if (currentBranch == null) {
             Logger.log("User is not at a known branch")
         }
+
     }
 
 }

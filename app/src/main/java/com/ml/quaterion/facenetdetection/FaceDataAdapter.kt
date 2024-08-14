@@ -14,6 +14,7 @@ class FaceDataAdapter(private val faceDataList: List<FaceData>) : RecyclerView.A
         val textDate: TextView = itemView.findViewById(R.id.textDate)
         val textRegistIn: TextView = itemView.findViewById(R.id.textRegistIn)
         val textRegistOut: TextView = itemView.findViewById(R.id.textRegistOut)
+        val textKantor: TextView = itemView.findViewById(R.id.textKantor)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FaceDataViewHolder {
@@ -27,6 +28,7 @@ class FaceDataAdapter(private val faceDataList: List<FaceData>) : RecyclerView.A
         holder.textDate.text = faceData.date
         holder.textRegistIn.text = faceData.registIn
         holder.textRegistOut.text = faceData.registOut
+        holder.textKantor.text = faceData.kantor
     }
 
     override fun getItemCount(): Int = faceDataList.size
