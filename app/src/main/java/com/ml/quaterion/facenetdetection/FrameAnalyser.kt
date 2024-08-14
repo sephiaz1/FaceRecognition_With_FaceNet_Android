@@ -48,7 +48,8 @@
     class FrameAnalyser( var context: Context ,
                          private var boundingBoxOverlay: BoundingBoxOverlay ,
                          private var model: FaceNetModel,
-                         private val isRegistIn: Boolean
+                         private val isRegistIn: Boolean,
+        private var currentBranch: String?
     ) : ImageAnalysis.Analyzer {
 
         private val realTimeOpts = FaceDetectorOptions.Builder()
@@ -301,17 +302,19 @@
             return dot / (mag1 * mag2)
         }
         private fun showScanSuccessDialog(name: String) {
+            Log.d("Alamat",""+currentBranch)
             // Inflate the dialog layout
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_scan_success, null)
             val successIcon = dialogView.findViewById<ImageView>(R.id.imageViewSuccessIcon)
             val messageText = dialogView.findViewById<TextView>(R.id.textViewScanMessage)
             val nameText = dialogView.findViewById<TextView>(R.id.textViewName)
+            val locationText = dialogView.findViewById<TextView>(R.id.textViewLocation)
             val rescanButton = dialogView.findViewById<Button>(R.id.buttonRescan)
             val takeAttendanceButton = dialogView.findViewById<Button>(R.id.buttonTakeAttendance)
 
             // Set the dialog content
             nameText.text = name
-
+            locationText.text = ""+currentBranch
             // Create the AlertDialog
             val builder = AlertDialog.Builder(context)
                 .setView(dialogView)

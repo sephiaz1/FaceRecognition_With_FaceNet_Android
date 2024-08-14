@@ -48,6 +48,15 @@ import com.ml.quaterion.facenetdetection.model.FaceNetModel
 import com.ml.quaterion.facenetdetection.model.Models
 import java.io.*
 import java.util.concurrent.Executors
+import android.location.Location
+import android.os.Looper
+import android.util.Log
+import android.widget.Toast
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 
 
 class MainActivity : AppCompatActivity() {
@@ -67,8 +76,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fileReader : FileReader
     private lateinit var cameraProviderFuture : ListenableFuture<ProcessCameraProvider>
     private lateinit var sharedPreferences: SharedPreferences
-
-    // <----------------------- User controls --------------------------->
+        private lateinit var fusedLocationClient: FusedLocationProviderClient
+        private lateinit var locationCallback: LocationCallback
+        private var currentBranch: String? = null
+            // <----------------------- User controls --------------------------->
 
     // Use the device's GPU to perform faster computations.
     // Refer https://www.tensorflow.org/lite/performance/gpu
@@ -90,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
 
     companion object {
-
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
         lateinit var logTextView : TextView
 
         fun setMessage( message : String ) {
@@ -102,6 +113,25 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isRegistIn = intent.getBooleanExtra("isRegistIn", true)
+
+        // Initialize the location client
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                for (location in locationResult.locations) {
+                    Log.d("Location", "Latitude: ${location.latitude}, Longitude: ${location.longitude}")
+                    determineBranch(location)
+                }
+            }
+        }
+
+        // Request location permission if not granted
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+        } else {
+            getCurrentLocation()
+        }
 
         // Remove the status bar to have a full screen experience
         // See this answer on SO -> https://stackoverflow.com/a/68152688/10878733
@@ -125,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         boundingBoxOverlay.setZOrderOnTop( true )
 
         faceNetModel = FaceNetModel( this , modelInfo , useGpu , useXNNPack )
-        frameAnalyser = FrameAnalyser( this , boundingBoxOverlay , faceNetModel, isRegistIn)
+        frameAnalyser = FrameAnalyser( this , boundingBoxOverlay , faceNetModel, isRegistIn, currentBranch)
         fileReader = FileReader( faceNetModel )
 
 
@@ -366,6 +396,60 @@ class MainActivity : AppCompatActivity() {
         objectInputStream.close()
         return data
     }
+    override fun onDestroy() {
+        super.onDestroy()
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+    private fun getCurrentLocation() {
+        val locationRequest = LocationRequest.create().apply {
+            interval = 10000
+            fastestInterval = 5000
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+            }
+        }
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+    }
 
+    private fun determineBranch(location: Location) {
+        Log.d("Location", "Dalam  determine branch")
+
+        // Define the branches with their respective latitude and longitude ranges
+        val branches = mapOf(
+            "Japfa Tower" to Pair(Pair(-7.273, -7.2715),  Pair(112.74253121622493, 112.74263121622493)),
+            "Branch B" to Pair(Pair(19.0760, 19.0770), Pair(72.8777, 72.8787))
+            // Add more branches as needed
+        )
+
+        for ((branch, coords) in branches) {
+            val (latRange, lonRange) = coords
+            if (location.latitude in latRange.first..latRange.second &&
+                location.longitude in lonRange.first..lonRange.second) {
+                currentBranch = branch
+                Logger.log("User is at $currentBranch")
+                Toast.makeText(
+                    this,
+                    "Current Location: Lat: ${location.latitude}, Lon: ${location.longitude}, Branch: $currentBranch",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                break
+            }
+        }
+        if (currentBranch == null) {
+            Logger.log("User is not at a known branch")
+        }
+    }
 
 }
