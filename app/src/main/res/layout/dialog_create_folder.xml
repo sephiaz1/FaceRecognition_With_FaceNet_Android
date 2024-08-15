@@ -13,18 +13,24 @@
 
     <Button
         android:id="@+id/addPhotosButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Photos" />
+        android:text="Add Photos"
+        android:backgroundTint="@color/biru_tua"
+
+        />
 
     <Button
         android:id="@+id/takePhotoButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/biru_tua"
+
         android:text="Take Photo" />
 
     <!-- Add a GridView to display selected photos -->
     <GridView
+
         android:id="@+id/selectedPhotosGridView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
@@ -32,5 +38,6 @@
         android:verticalSpacing="4dp"
         android:horizontalSpacing="4dp"
         android:stretchMode="columnWidth"
+
         android:gravity="center" />
 </LinearLayout>

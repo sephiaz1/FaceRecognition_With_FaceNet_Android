@@ -16,10 +16,13 @@
         android:id="@+id/textViewScanMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Scan successful"
+        android:text="Scan success"
         android:layout_gravity="center"
         android:gravity="center"
+        android:textStyle="bold"
+
         android:textSize="18sp"
+        android:textColor="@color/hitam"
         android:paddingTop="10dp" />
 
     <TextView
@@ -29,12 +32,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:paddingBottom="10dp"
+        android:textColor="@color/hitam"
+        android:paddingBottom="5dp"
         android:paddingTop="10dp" />
     <TextView
         android:id="@+id/textViewLocation"
         android:layout_gravity="center"
         android:gravity="center"
+        android:textColor="@color/hitam"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
@@ -45,12 +50,17 @@
         android:id="@+id/buttonRescan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Rescan" />
+        android:text="Rescan"
+        android:backgroundTint="@color/biru_tua"
+        android:textColor="@android:color/white"
+        />
 
     <Button
         android:id="@+id/buttonTakeAttendance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Take Attendance"
-        android:layout_marginTop="10dp"/>
+        android:backgroundTint="@color/biru_tua"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="5dp"/>
 </LinearLayout>

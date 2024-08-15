@@ -9,6 +9,7 @@
         android:orientation="horizontal"
         android:padding="8dp">
         <TextView
+            android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -16,18 +17,24 @@
             android:textSize="16sp" />
 
         <TextView
+            android:textStyle="bold"
+
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Date"
             android:textSize="16sp" />
         <TextView
+            android:textStyle="bold"
+
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Kantor"
             android:textSize="16sp" />
         <TextView
+            android:textStyle="bold"
+
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -35,6 +42,7 @@
             android:textSize="16sp" />
 
         <TextView
+            android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -58,14 +66,22 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Delete Data" />
+            android:text="Delete Data"
+            android:layout_marginRight="10dp"
+            android:backgroundTint="@color/biru_tua"
+            android:textColor="@android:color/white"
+            />
 
         <Button
             android:id="@+id/buttonBack"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Back" />
+            android:text="Back"
+            android:layout_marginLeft="10dp"
+            android:backgroundTint="@color/biru_tua"
+            android:textColor="@android:color/white"
+            />
 
     </LinearLayout>
 

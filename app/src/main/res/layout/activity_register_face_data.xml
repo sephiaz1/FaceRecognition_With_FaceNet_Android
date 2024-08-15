@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <ListView
         android:id="@+id/folder_list_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/registerFaceFab"
         android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/registerFaceButton"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/registerFaceFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register Face Data" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:contentDescription="register_face"
+        android:src="@android:drawable/ic_input_add"
+        android:backgroundTint="@color/biru_tua"
+        android:tint="@android:color/white"
+        />
 
     <Button
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Back" />
+        android:text="Back"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/biru_tua"
+        android:textColor="@android:color/white"/>
 
-</LinearLayout>
+</RelativeLayout>

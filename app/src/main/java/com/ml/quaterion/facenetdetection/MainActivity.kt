@@ -402,34 +402,26 @@ class MainActivity : AppCompatActivity() {
     }
     private fun getCurrentLocation() {
         val locationRequest = LocationRequest.create().apply {
-            interval = 10000
+            interval = 5000
             fastestInterval = 5000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-            }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        } else {
+            // Request permission if not granted
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
         }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
     }
 
     private fun determineBranch(location: Location) {
-        Log.d("Location", "Dalam  determine branch")
+        Log.d("Location", "Determining branch for Lat: ${location.latitude}, Lon: ${location.longitude}")
 
-        // Define the branches with their respective latitude and longitude ranges
         val branches = mapOf(
-            "Japfa Tower" to Pair(Pair(-7.273, -7.2715),  Pair(112.74253121622493, 112.74263121622493)),
-            "Branch B" to Pair(Pair(19.0760, 19.0770), Pair(72.8777, 72.8787))
-            // Add more branches as needed
+            "Japfa Tower" to Pair(Pair(-7.273, -7.271), Pair(112.742, 112.743)),
+            "Branch B" to Pair(Pair(19.075, 19.078), Pair(72.877, 72.879))
         )
 
         for ((branch, coords) in branches) {

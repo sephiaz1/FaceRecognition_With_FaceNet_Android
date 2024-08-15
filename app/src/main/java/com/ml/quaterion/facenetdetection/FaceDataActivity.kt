@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class FaceDataActivity : AppCompatActivity() {
 
@@ -21,7 +23,6 @@ class FaceDataActivity : AppCompatActivity() {
         logSharedPreferences()
         recyclerView = findViewById(R.id.recyclerViewFaceData)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
         // Initialize face data list and adapter
         faceDataList = loadFaceData().toMutableList()
         faceDataAdapter = FaceDataAdapter(faceDataList)

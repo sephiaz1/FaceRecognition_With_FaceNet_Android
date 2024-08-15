@@ -3,6 +3,7 @@ package com.ml.quaterion.facenetdetection
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 
 class StartingActivity : AppCompatActivity() {
@@ -11,11 +12,10 @@ class StartingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_starting)
 
-        val registerButton = findViewById<Button>(R.id.registerButton)
-        val registInButton = findViewById<Button>(R.id.registInButton)
-        val registOutButton = findViewById<Button>(R.id.registOutButton)
-
-        val checkAttendanceButton = findViewById<Button>(R.id.checkAttendanceButton)
+        val registerButton = findViewById<RelativeLayout>(R.id.registerButtonContainer)
+        val registInButton = findViewById<RelativeLayout>(R.id.registInButtonContainer)
+        val registOutButton = findViewById<RelativeLayout>(R.id.registOutButtonContainer)
+        val checkAttendanceButton = findViewById<RelativeLayout>(R.id.checkAttendanceButtonContainer)
 
         registerButton.setOnClickListener {
             val intent = Intent(this, RegisterFaceDataActivity::class.java)

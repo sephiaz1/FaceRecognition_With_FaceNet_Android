@@ -1,36 +1,163 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_gravity="center"
-    android:gravity="center"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#caf0f8">
 
-    <Button
-        android:id="@+id/registerButton"
+    <!-- Clock TextView -->
+    <TextView
+        android:id="@+id/clock"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="04:40"
+        android:gravity="center"
+        android:textSize="60dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:background="@drawable/rounded_edge_square"
+        android:elevation="16dp"/>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register Face Data" />
+        android:layout_below="@id/clock"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:elevation="20dp"
+        >
 
-    <Button
-        android:id="@+id/registInButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Regist In"
-        android:layout_marginTop="16dp" />
+        <!-- Register Face Data Button -->
+        <RelativeLayout
+            android:id="@+id/registerButtonContainer"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_edge_square_hijau"
+            android:elevation="8dp"
+            android:layout_margin="5dp">
 
-    <Button
-        android:id="@+id/registOutButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Regist Out"
-        android:layout_marginTop="16dp" />
-    <Button
-        android:id="@+id/checkAttendanceButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Check Attendance"
-        android:layout_marginTop="16dp" />
+            <ImageView
+                android:id="@+id/registerImage"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/register" />
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/registerButtonText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/registerImage"
+                android:layout_centerHorizontal="true"
+                android:text="Register Face Data"
+                android:textSize="20dp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="8dp" />
+        </RelativeLayout>
+
+        <!-- Regist In and Regist Out Buttons in a Row -->
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <RelativeLayout
+                android:elevation="8dp"
+
+                android:id="@+id/registInButtonContainer"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/rounded_edge_square_hijau">
+
+                <ImageView
+                    android:id="@+id/registInImage"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/check_in" />
+
+                <TextView
+                    android:id="@+id/registInButtonText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/registInImage"
+                    android:layout_centerHorizontal="true"
+                    android:text="Regist In"
+                    android:textSize="20dp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="8dp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:elevation="8dp"
+
+                android:id="@+id/registOutButtonContainer"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/rounded_edge_square_hijau">
+
+                <ImageView
+                    android:id="@+id/registOutImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="40dp"
+                    android:src="@drawable/check_out" />
+
+                <TextView
+                    android:id="@+id/registOutButtonText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/registOutImage"
+                    android:layout_centerHorizontal="true"
+                    android:text="Regist Out"
+                    android:textSize="20dp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="8dp" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <!-- Check Attendance Button -->
+        <RelativeLayout
+            android:id="@+id/checkAttendanceButtonContainer"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_edge_square_hijau"
+            android:elevation="8dp">
+
+            <ImageView
+                android:id="@+id/checkAttendanceImage"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/attendance" />
+
+            <TextView
+                android:id="@+id/checkAttendanceButtonText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/checkAttendanceImage"
+                android:layout_centerHorizontal="true"
+                android:text="Check Attendance"
+                android:elevation="8dp"
+                android:textSize="20dp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="8dp" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

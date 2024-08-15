@@ -16,8 +16,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -44,7 +46,7 @@ class RegisterFaceDataActivity : AppCompatActivity() {
         // Launch directory chooser
         launchChooseDirectoryIntent()
 
-        val registerFaceButton: Button = findViewById(R.id.registerFaceButton)
+        val registerFaceButton: FloatingActionButton = findViewById(R.id.registerFaceFab)
         registerFaceButton.setOnClickListener { showCreateFolderDialog() }
     }
 
@@ -119,6 +121,11 @@ class RegisterFaceDataActivity : AppCompatActivity() {
         takePhotoButton.setOnClickListener {
             launchCamera()
         }
+
+
+// Change the color of the "Create" and "Cancel" buttons
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.biru_tua))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.biru_tua))
     }
 
     private fun launchImagePicker() {
