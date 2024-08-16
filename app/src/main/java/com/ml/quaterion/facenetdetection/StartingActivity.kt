@@ -13,8 +13,8 @@ class StartingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_starting)
 
         val registerButton = findViewById<RelativeLayout>(R.id.registerButtonContainer)
-        val registInButton = findViewById<RelativeLayout>(R.id.registInButtonContainer)
-        val registOutButton = findViewById<RelativeLayout>(R.id.registOutButtonContainer)
+        val registInButton = findViewById<Button>(R.id.checkInButton)
+        val registOutButton = findViewById<Button>(R.id.checkOutButton)
         val checkAttendanceButton = findViewById<RelativeLayout>(R.id.checkAttendanceButtonContainer)
 
         registerButton.setOnClickListener {

@@ -99,7 +99,7 @@ class RegisterFaceDataActivity : AppCompatActivity() {
                 val folderName = folderNameEditText.text.toString().trim()
                 if (folderName.isNotEmpty() && rootUri != null) {
                     createFolderAndSavePhotos(folderName)
-                    // Clear the selected images after creating the folder
+
                     selectedImages.clear()
                     imageAdapter.notifyDataSetChanged()
                 }  else {
@@ -107,7 +107,6 @@ class RegisterFaceDataActivity : AppCompatActivity() {
                 }
             }
             .setNegativeButton("Cancel") { _, _ ->
-                // Clear the selected images when canceling
                 selectedImages.clear()
                 imageAdapter.notifyDataSetChanged()
             }            .create()
@@ -122,8 +121,6 @@ class RegisterFaceDataActivity : AppCompatActivity() {
             launchCamera()
         }
 
-
-// Change the color of the "Create" and "Cancel" buttons
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.biru_tua))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.biru_tua))
     }
@@ -139,7 +136,6 @@ class RegisterFaceDataActivity : AppCompatActivity() {
         val photoFile: File? = try {
             createImageFile()
         } catch (ex: IOException) {
-            // Error occurred while creating the File
             null
         }
         photoFile?.also {
@@ -182,13 +178,13 @@ class RegisterFaceDataActivity : AppCompatActivity() {
                         } else {
                             intent.data?.let { selectedImages.add(it) }
                         }
-                        imageAdapter.notifyDataSetChanged() // Notify adapter to refresh GridView
+                        imageAdapter.notifyDataSetChanged()
                     }
                 }
-                2 -> { // Camera
+                2 -> {
                     val photoUri = Uri.fromFile(File(currentPhotoPath))
                     selectedImages.add(photoUri)
-                    imageAdapter.notifyDataSetChanged() // Notify adapter to refresh GridView
+                    imageAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -201,7 +197,7 @@ class RegisterFaceDataActivity : AppCompatActivity() {
         if (newFolderUri != null) {
             savePhotosToFolder(newFolderUri)
             Toast.makeText(this, "Folder created and photos added.", Toast.LENGTH_SHORT).show()
-            displayDirectories(parentUri) // Refresh the ListView
+            displayDirectories(parentUri)
         } else {
             Toast.makeText(this, "Failed to create folder.", Toast.LENGTH_SHORT).show()
         }
@@ -250,7 +246,7 @@ class RegisterFaceDataActivity : AppCompatActivity() {
             .setPositiveButton("Yes") { _, _ ->
                 if (folder.delete()) {
                     Toast.makeText(this, "Folder deleted", Toast.LENGTH_SHORT).show()
-                    rootUri?.let { displayDirectories(it) } // Refresh ListView
+                    rootUri?.let { displayDirectories(it) }
                 } else {
                     Toast.makeText(this, "Failed to delete folder", Toast.LENGTH_SHORT).show()
                 }

@@ -23,18 +23,17 @@ class FaceDataActivity : AppCompatActivity() {
         logSharedPreferences()
         recyclerView = findViewById(R.id.recyclerViewFaceData)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
         // Initialize face data list and adapter
         faceDataList = loadFaceData().toMutableList()
         faceDataAdapter = FaceDataAdapter(faceDataList)
         recyclerView.adapter = faceDataAdapter
 
-        // Set up Delete button
         val deleteButton: Button = findViewById(R.id.buttonDelete)
         deleteButton.setOnClickListener {
             deleteAllFaceData()
         }
 
-        // Set up Back button
         val backButton: Button = findViewById(R.id.buttonBack)
         backButton.setOnClickListener {
             val intent = Intent(this, StartingActivity::class.java)

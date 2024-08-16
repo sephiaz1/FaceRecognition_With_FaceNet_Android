@@ -18,8 +18,8 @@
             <gradient
                 android:type="linear"
                 android:gradientRadius="100dp"
-                android:startColor="#E6EDF8"
-                android:endColor="#E6EDF8" />
+                android:startColor="#FFFFFF"
+                android:endColor="#FFFFFF" />
             <corners android:radius="16dp"/>
             <padding
                 android:left="0dp"
@@ -27,5 +27,6 @@
                 android:right="0dp"
                 android:bottom="0dp"/>
         </shape>
+
     </item>
 </layer-list>
