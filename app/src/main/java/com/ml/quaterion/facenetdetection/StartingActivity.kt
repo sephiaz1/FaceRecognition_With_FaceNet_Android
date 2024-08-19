@@ -16,6 +16,7 @@ class StartingActivity : AppCompatActivity() {
         val registInButton = findViewById<Button>(R.id.checkInButton)
         val registOutButton = findViewById<Button>(R.id.checkOutButton)
         val checkAttendanceButton = findViewById<RelativeLayout>(R.id.checkAttendanceButtonContainer)
+        val setDirectoryButton = findViewById<RelativeLayout>(R.id.setDirectoryButton)
 
         registerButton.setOnClickListener {
             val intent = Intent(this, RegisterFaceDataActivity::class.java)
@@ -37,6 +38,11 @@ class StartingActivity : AppCompatActivity() {
 
         checkAttendanceButton.setOnClickListener {
             val intent = Intent(this, FaceDataActivity::class.java)
+            startActivity(intent)
+        }
+
+        setDirectoryButton.setOnClickListener {
+            val intent = Intent(this, DirectorySelectionActivity::class.java)
             startActivity(intent)
         }
     }

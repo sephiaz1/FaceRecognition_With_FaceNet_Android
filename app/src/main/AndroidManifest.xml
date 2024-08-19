@@ -4,13 +4,14 @@
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="true"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+        android:required="true" />
+
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -19,34 +20,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity
+            android:name=".DirectorySelectionActivity"
+            android:exported="false" />
         <activity
             android:name=".StartingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Add this activity declaration -->
-        <activity
-            android:name=".FaceDataActivity">
-        </activity>
+        </activity> <!-- Add this activity declaration -->
+        <activity android:name=".FaceDataActivity"></activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".RegisterFaceDataActivity" />
 
         <uses-native-library
             android:name="libOpenCL.so"
             android:required="false" />
-
         <uses-native-library
             android:name="libOpenCL-car.so"
             android:required="false" />
-
         <uses-native-library
             android:name="libOpenCL-pixel.so"
             android:required="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

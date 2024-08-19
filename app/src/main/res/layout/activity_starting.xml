@@ -235,12 +235,10 @@
 
         <androidx.cardview.widget.CardView
             android:translationZ="10dp"
-
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="100dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/rounded_edge_square_hijau"
-
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginBottom="10dp"
@@ -254,10 +252,10 @@
 
             <ImageView
                 android:id="@+id/checkAttendanceImage"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="15dp"
                 android:src="@drawable/attendance" />
 
             <TextView
@@ -270,8 +268,48 @@
                 android:elevation="8dp"
                 android:text="Check Attendance"
                 android:textColor="@android:color/black"
-                android:textSize="20dp" />
+                android:textSize="16dp" />
         </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:translationZ="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_edge_square_hijau"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp"
+            android:elevation="20dp"
+            app:cardCornerRadius="20dp">
+            <!-- Check Attendance Button -->
+
+            <RelativeLayout
+                android:id="@+id/setDirectoryButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/setDirectoryImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:src="@drawable/folder" />
+
+                <TextView
+                    android:id="@+id/setDirectory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/setDirectoryImage"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp"
+                    android:elevation="8dp"
+                    android:text="Set Directory"
+                    android:textColor="@android:color/black"
+                    android:textSize="16dp" />
+            </RelativeLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 
@@ -280,14 +318,14 @@
         android:layout_height="1000dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="600dp"
+        android:layout_marginTop="580dp"
         android:layout_marginBottom="-200dp"
         android:background="@drawable/top_shape_orange" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="1000dp"
-        android:layout_marginTop="650dp"
+        android:layout_marginTop="600dp"
         android:layout_marginBottom="-200dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"

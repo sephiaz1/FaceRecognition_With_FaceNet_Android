@@ -2,6 +2,7 @@ package com.ml.quaterion.facenetdetection
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
@@ -24,7 +25,6 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
-
 class RegisterFaceDataActivity : AppCompatActivity() {
 
     private lateinit var listView: ListView
@@ -32,10 +32,14 @@ class RegisterFaceDataActivity : AppCompatActivity() {
     private var selectedImages: MutableList<Uri> = mutableListOf()
     private var rootUri: Uri? = null
     private lateinit var currentPhotoPath: String
+    private lateinit var sharedPreferences: SharedPreferences
+    private val SHARED_PREF_DIR_URI_KEY = "shared_pref_dir_uri_key"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_face_data)
+
+        sharedPreferences = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
 
         listView = findViewById(R.id.folder_list_view)
         val backButton: Button = findViewById(R.id.backButton)
@@ -43,11 +47,22 @@ class RegisterFaceDataActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        // Launch directory chooser
-        launchChooseDirectoryIntent()
+        // Load the default directory
+        loadDefaultDirectory()
 
         val registerFaceButton: FloatingActionButton = findViewById(R.id.registerFaceFab)
         registerFaceButton.setOnClickListener { showCreateFolderDialog() }
+    }
+
+    private fun loadDefaultDirectory() {
+        val savedDirUriString = sharedPreferences.getString(SHARED_PREF_DIR_URI_KEY, null)
+        if (savedDirUriString != null) {
+            rootUri = Uri.parse(savedDirUriString)
+            rootUri?.let { displayDirectories(it) }
+        } else {
+            // Prompt user to select a directory if not set
+            launchChooseDirectoryIntent()
+        }
     }
 
     private fun launchChooseDirectoryIntent() {
@@ -60,6 +75,7 @@ class RegisterFaceDataActivity : AppCompatActivity() {
             val dirUri: Uri? = result.data?.data
             if (dirUri != null) {
                 rootUri = dirUri
+                sharedPreferences.edit().putString(SHARED_PREF_DIR_URI_KEY, dirUri.toString()).apply()
                 displayDirectories(dirUri)
             }
         }
@@ -90,7 +106,7 @@ class RegisterFaceDataActivity : AppCompatActivity() {
 
         imageAdapter = ImageAdapter(this, selectedImages)
         gridView.adapter = imageAdapter
-        imageAdapter.notifyDataSetChanged() // Notify adapter to refresh GridView
+        imageAdapter.notifyDataSetChanged()
 
         val dialog = AlertDialog.Builder(this)
             .setTitle("Create Folder and Add Photos")
@@ -102,14 +118,15 @@ class RegisterFaceDataActivity : AppCompatActivity() {
 
                     selectedImages.clear()
                     imageAdapter.notifyDataSetChanged()
-                }  else {
+                } else {
                     Toast.makeText(this, "Please select a directory and enter a folder name.", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Cancel") { _, _ ->
                 selectedImages.clear()
                 imageAdapter.notifyDataSetChanged()
-            }            .create()
+            }
+            .create()
 
         dialog.show()
 
@@ -255,8 +272,6 @@ class RegisterFaceDataActivity : AppCompatActivity() {
             .show()
     }
 
-
-
     private class FolderAdapter(
         context: Context,
         private val folders: List<DocumentFile>,
@@ -274,39 +289,38 @@ class RegisterFaceDataActivity : AppCompatActivity() {
             folderNameTextView.text = folder?.name
 
             deleteButton.setOnClickListener {
-                        folder?.let { onDeleteClick(it) }
-                }
-
-                return view
+                folder?.let { onDeleteClick(it) }
             }
+
+            return view
         }
-
-
     }
 
-private class ImageAdapter(
-    private val context: Context,
-    private val imageUris: MutableList<Uri>
-) : BaseAdapter() {
+    private class ImageAdapter(
+        private val context: Context,
+        private val imageUris: MutableList<Uri>
+    ) : BaseAdapter() {
 
-    override fun getCount(): Int = imageUris.size
+        override fun getCount(): Int = imageUris.size
 
-    override fun getItem(position: Int): Any = imageUris[position]
+        override fun getItem(position: Int): Any = imageUris[position]
 
-    override fun getItemId(position: Int): Long = position.toLong()
+        override fun getItemId(position: Int): Long = position.toLong()
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val imageView = convertView ?: ImageView(context)
-        val uri = imageUris[position]
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val imageView = convertView ?: ImageView(context)
+            val uri = imageUris[position]
 
-        (imageView as ImageView).apply {
-            layoutParams = ViewGroup.LayoutParams(200, 200)
-            scaleType = ImageView.ScaleType.CENTER_CROP
-            setPadding(4, 4, 4, 4)
-            setImageURI(uri)
+            (imageView as ImageView).apply {
+                layoutParams = ViewGroup.LayoutParams(200, 200)
+                scaleType = ImageView.ScaleType.CENTER_CROP
+                setPadding(4, 4, 4, 4)
+                setImageURI(uri)
+            }
+
+            return imageView
         }
-
-        return imageView
     }
+
 
 }

@@ -2,6 +2,7 @@
 package com.ml.quaterion.facenetdetection
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -47,9 +48,10 @@ import com.google.android.gms.location.LocationServices
 
 
 class MainActivity : AppCompatActivity() {
-
-    private var isSerializedDataStored = false
+    private lateinit var sharedPreferences: SharedPreferences
     private val SHARED_PREF_DIR_URI_KEY = "shared_pref_dir_uri_key"
+    private val DIRECTORY_SELECTION_REQUEST_CODE = 100
+    private var isSerializedDataStored = false
 
     // Serialized data will be stored ( in app's private storage ) with this filename.
     private val SERIALIZED_DATA_FILENAME = "image_data"
@@ -63,7 +65,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var faceNetModel : FaceNetModel
     private lateinit var fileReader : FileReader
     private lateinit var cameraProviderFuture : ListenableFuture<ProcessCameraProvider>
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private var currentBranch: String? = null
@@ -156,23 +157,32 @@ class MainActivity : AppCompatActivity() {
         else {
             startCameraPreview()
         }
-
         sharedPreferences = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
+
         // Check if the directory URI is already stored
         val savedDirUriString = sharedPreferences.getString(SHARED_PREF_DIR_URI_KEY, null)
         if (savedDirUriString == null) {
-            // No directory selected before, ask the user to select one
-            Logger.log("No directory selected. Please choose a directory.")
-            showSelectDirectoryDialog()
+            // No directory selected before, start DirectorySelectionActivity
+            val intent = Intent(this, DirectorySelectionActivity::class.java)
+            startActivityForResult(intent, DIRECTORY_SELECTION_REQUEST_CODE)
         } else {
             // Directory is already selected, rescan it
-            Logger.log("Directory found. Rescanning...")
             val dirUri = Uri.parse(savedDirUriString)
             rescanDirectory(dirUri)
         }
+
     }
 
     // ---------------------------------------------- //
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == DIRECTORY_SELECTION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val dirUriString = data?.getStringExtra("dirUri") ?: return
+            val dirUri = Uri.parse(dirUriString)
+            sharedPreferences.edit().putString(SHARED_PREF_DIR_URI_KEY, dirUriString).apply()
+            rescanDirectory(dirUri)
+        }
+    }
 
     // Attach the camera stream to the PreviewView.
     private fun startCameraPreview() {
@@ -232,24 +242,6 @@ class MainActivity : AppCompatActivity() {
 
 
     // ---------------------------------------------- //
-
-
-    // Open File chooser to choose the images directory.
-    private fun showSelectDirectoryDialog() {
-        val alertDialog = AlertDialog.Builder(this).apply {
-            setTitle("Select Images Directory")
-            setMessage("As mentioned in the project's README file, please select a directory that contains the images.")
-            setCancelable(false)
-            setPositiveButton("SELECT") { dialog, which ->
-                dialog.dismiss()
-                launchChooseDirectoryIntent()
-            }
-            create()
-        }
-        alertDialog.show()
-    }
-
-
 
     private fun launchChooseDirectoryIntent() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
