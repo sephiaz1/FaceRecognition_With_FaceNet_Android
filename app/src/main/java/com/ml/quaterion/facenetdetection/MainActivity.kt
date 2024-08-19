@@ -49,6 +49,7 @@ import com.google.android.gms.location.LocationServices
 class MainActivity : AppCompatActivity() {
 
     private var isSerializedDataStored = false
+    private val SHARED_PREF_DIR_URI_KEY = "shared_pref_dir_uri_key"
 
     // Serialized data will be stored ( in app's private storage ) with this filename.
     private val SERIALIZED_DATA_FILENAME = "image_data"
@@ -156,31 +157,19 @@ class MainActivity : AppCompatActivity() {
             startCameraPreview()
         }
 
-        sharedPreferences = getSharedPreferences( getString( R.string.app_name ) , Context.MODE_PRIVATE )
-        isSerializedDataStored = sharedPreferences.getBoolean( SHARED_PREF_IS_DATA_STORED_KEY , false )
-        if ( !isSerializedDataStored ) {
-            Logger.log( "No serialized data was found. Select the images directory.")
+        sharedPreferences = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
+        // Check if the directory URI is already stored
+        val savedDirUriString = sharedPreferences.getString(SHARED_PREF_DIR_URI_KEY, null)
+        if (savedDirUriString == null) {
+            // No directory selected before, ask the user to select one
+            Logger.log("No directory selected. Please choose a directory.")
             showSelectDirectoryDialog()
+        } else {
+            // Directory is already selected, rescan it
+            Logger.log("Directory found. Rescanning...")
+            val dirUri = Uri.parse(savedDirUriString)
+            rescanDirectory(dirUri)
         }
-        else {
-            val alertDialog = AlertDialog.Builder( this ).apply {
-                setTitle( "Serialized Data")
-                setMessage( "Existing image data was found on this device. Would you like to load it?" )
-                setCancelable( false )
-                setNegativeButton( "LOAD") { dialog, which ->
-                    dialog.dismiss()
-                    frameAnalyser.faceList = loadSerializedImageData()
-                    Logger.log( "Serialized data loaded.")
-                }
-                setPositiveButton( "RESCAN") { dialog, which ->
-                    dialog.dismiss()
-                    launchChooseDirectoryIntent()
-                }
-                create()
-            }
-            alertDialog.show()
-        }
-
     }
 
     // ---------------------------------------------- //
@@ -247,11 +236,11 @@ class MainActivity : AppCompatActivity() {
 
     // Open File chooser to choose the images directory.
     private fun showSelectDirectoryDialog() {
-        val alertDialog = AlertDialog.Builder( this ).apply {
-            setTitle( "Select Images Directory")
-            setMessage( "As mentioned in the project\'s README file, please select a directory which contains the images." )
-            setCancelable( false )
-            setPositiveButton( "SELECT") { dialog, which ->
+        val alertDialog = AlertDialog.Builder(this).apply {
+            setTitle("Select Images Directory")
+            setMessage("As mentioned in the project's README file, please select a directory that contains the images.")
+            setCancelable(false)
+            setPositiveButton("SELECT") { dialog, which ->
                 dialog.dismiss()
                 launchChooseDirectoryIntent()
             }
@@ -261,80 +250,87 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
     private fun launchChooseDirectoryIntent() {
-        val intent = Intent( Intent.ACTION_OPEN_DOCUMENT_TREE )
-        // startForActivityResult is deprecated.
-        // See this SO thread -> https://stackoverflow.com/questions/62671106/onactivityresult-method-is-deprecated-what-is-the-alternative
-        directoryAccessLauncher.launch( intent )
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        directoryAccessLauncher.launch(intent)
     }
 
 
     // Read the contents of the select directory here.
     // The system handles the request code here as well.
     // See this SO question -> https://stackoverflow.com/questions/47941357/how-to-access-files-in-a-directory-given-a-content-uri
-    private val directoryAccessLauncher = registerForActivityResult( ActivityResultContracts.StartActivityForResult() ) {
+    private val directoryAccessLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         val dirUri = it.data?.data ?: return@registerForActivityResult
-        val childrenUri =
-            DocumentsContract.buildChildDocumentsUriUsingTree(
-                dirUri,
-                DocumentsContract.getTreeDocumentId( dirUri )
-            )
+
+        // Save the selected directory URI in SharedPreferences
+        sharedPreferences.edit().putString(SHARED_PREF_DIR_URI_KEY, dirUri.toString()).apply()
+
+        // Rescan the selected directory
+        rescanDirectory(dirUri)
+    }
+
+    private fun rescanDirectory(dirUri: Uri) {
+        val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
+            dirUri,
+            DocumentsContract.getTreeDocumentId(dirUri)
+        )
         val tree = DocumentFile.fromTreeUri(this, childrenUri)
-        val images = ArrayList<Pair<String,Bitmap>>()
+        val images = ArrayList<Pair<String, Bitmap>>()
         var errorFound = false
-        if ( tree!!.listFiles().isNotEmpty()) {
-            for ( doc in tree.listFiles() ) {
-                if ( doc.isDirectory && !errorFound ) {
+
+        if (tree!!.listFiles().isNotEmpty()) {
+            for (doc in tree.listFiles()) {
+                if (doc.isDirectory && !errorFound) {
                     val name = doc.name!!
-                    for ( imageDocFile in doc.listFiles() ) {
+                    for (imageDocFile in doc.listFiles()) {
                         try {
-                            images.add( Pair( name , getFixedBitmap( imageDocFile.uri ) ) )
-                        }
-                        catch ( e : Exception ) {
+                            images.add(Pair(name, getFixedBitmap(imageDocFile.uri)))
+                        } catch (e: Exception) {
                             errorFound = true
-                            Logger.log( "Could not parse an image in $name directory. Make sure that the file structure is " +
-                                    "as described in the README of the project and then restart the app." )
+                            Logger.log("Could not parse an image in $name directory. Make sure that the file structure is " +
+                                    "as described in the README of the project and then restart the app.")
                             break
                         }
                     }
-                    Logger.log( "Found ${doc.listFiles().size} images in $name directory" )
-                }
-                else {
+                    Logger.log("Found ${doc.listFiles().size} images in $name directory")
+                } else {
                     errorFound = true
-                    Logger.log( "The selected folder should contain only directories. Make sure that the file structure is " +
-                            "as described in the README of the project and then restart the app." )
+                    Logger.log("The selected folder should contain only directories. Make sure that the file structure is " +
+                            "as described in the README of the project and then restart the app.")
                 }
             }
-        }
-        else {
+        } else {
             errorFound = true
-            Logger.log( "The selected folder doesn't contain any directories. Make sure that the file structure is " +
-                    "as described in the README of the project and then restart the app." )
+            Logger.log("The selected folder doesn't contain any directories. Make sure that the file structure is " +
+                    "as described in the README of the project and then restart the app.")
         }
-        if ( !errorFound ) {
-            fileReader.run( images , fileReaderCallback )
-            Logger.log( "Detecting faces in ${images.size} images ..." )
-        }
-        else {
-            val alertDialog = AlertDialog.Builder( this ).apply {
-                setTitle( "Error while parsing directory")
-                setMessage( "There were some errors while parsing the directory. Please see the log below. Make sure that the file structure is " +
-                        "as described in the README of the project and then tap RESELECT" )
-                setCancelable( false )
-                setPositiveButton( "RESELECT") { dialog, which ->
-                    dialog.dismiss()
-                    launchChooseDirectoryIntent()
-                }
-                setNegativeButton( "CANCEL" ){ dialog , which ->
-                    dialog.dismiss()
-                    finish()
-                }
-                create()
-            }
-            alertDialog.show()
+
+        if (!errorFound) {
+            fileReader.run(images, fileReaderCallback)
+            Logger.log("Detecting faces in ${images.size} images ...")
+        } else {
+            showErrorDialog()
         }
     }
 
+    private fun showErrorDialog() {
+        val alertDialog = AlertDialog.Builder(this).apply {
+            setTitle("Error while parsing directory")
+            setMessage("There were some errors while parsing the directory. Please see the log below. Make sure that the file structure is as described in the README of the project and then tap RESELECT")
+            setCancelable(false)
+            setPositiveButton("RESELECT") { dialog, which ->
+                dialog.dismiss()
+                launchChooseDirectoryIntent()
+            }
+            setNegativeButton("CANCEL") { dialog, which ->
+                dialog.dismiss()
+                finish()
+            }
+            create()
+        }
+        alertDialog.show()
+    }
 
     // Get the image as a Bitmap from given Uri and fix the rotation using the Exif interface
     // Source -> https://stackoverflow.com/questions/14066038/why-does-an-image-captured-using-camera-intent-gets-rotated-on-some-devices-on-a
