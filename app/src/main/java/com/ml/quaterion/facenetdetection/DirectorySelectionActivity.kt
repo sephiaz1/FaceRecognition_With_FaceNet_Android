@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -61,15 +62,18 @@ class DirectorySelectionActivity : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
         directoryAccessLauncher.launch(intent)
     }
+    private val directoryAccessLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val dirUri = result.data?.data ?: return@registerForActivityResult
 
-    private val directoryAccessLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        val dirUri = it.data?.data ?: return@registerForActivityResult
+            // Persist access to the directory
+            val takeFlags: Int = result.data?.flags?.and(
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            ) ?: 0
+            contentResolver.takePersistableUriPermission(dirUri, takeFlags)
 
-        // Save the selected directory URI in SharedPreferences
-        sharedPreferences.edit().putString(SHARED_PREF_DIR_URI_KEY, dirUri.toString()).apply()
-
-        // Update the TextView with the new directory path
-        findViewById<TextView>(R.id.selected_directory_path).text = "Selected Directory: ${getDirectoryName(dirUri)}"
+            // Save the selected directory URI in SharedPreferences
+            sharedPreferences.edit().putString(SHARED_PREF_DIR_URI_KEY, dirUri.toString()).apply()
 
         // Notify RegisterFaceDataActivity about the directory change
         val resultIntent = Intent().apply {

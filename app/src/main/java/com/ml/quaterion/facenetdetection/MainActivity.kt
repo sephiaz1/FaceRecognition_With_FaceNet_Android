@@ -40,6 +40,7 @@ import android.location.Location
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -158,19 +159,10 @@ class MainActivity : AppCompatActivity() {
             startCameraPreview()
         }
         sharedPreferences = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
-
-        // Check if the directory URI is already stored
         val savedDirUriString = sharedPreferences.getString(SHARED_PREF_DIR_URI_KEY, null)
-        if (savedDirUriString == null) {
-            // No directory selected before, start DirectorySelectionActivity
-            val intent = Intent(this, DirectorySelectionActivity::class.java)
-            startActivityForResult(intent, DIRECTORY_SELECTION_REQUEST_CODE)
-        } else {
-            // Directory is already selected, rescan it
-            val dirUri = Uri.parse(savedDirUriString)
-            rescanDirectory(dirUri)
-        }
 
+        val dirUri = Uri.parse(savedDirUriString)
+        rescanDirectory(dirUri)
     }
 
     // ---------------------------------------------- //
@@ -243,24 +235,27 @@ class MainActivity : AppCompatActivity() {
 
     // ---------------------------------------------- //
 
+
     private fun launchChooseDirectoryIntent() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
         directoryAccessLauncher.launch(intent)
     }
+    private val directoryAccessLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val dirUri = result.data?.data ?: return@registerForActivityResult
 
+            // Persist access to the directory
+            val takeFlags: Int = result.data?.flags?.and(
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            ) ?: 0
+            contentResolver.takePersistableUriPermission(dirUri, takeFlags)
 
-    // Read the contents of the select directory here.
-    // The system handles the request code here as well.
-    // See this SO question -> https://stackoverflow.com/questions/47941357/how-to-access-files-in-a-directory-given-a-content-uri
-    private val directoryAccessLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        val dirUri = it.data?.data ?: return@registerForActivityResult
+            // Save the selected directory URI in SharedPreferences
+            sharedPreferences.edit().putString(SHARED_PREF_DIR_URI_KEY, dirUri.toString()).apply()
 
-        // Save the selected directory URI in SharedPreferences
-        sharedPreferences.edit().putString(SHARED_PREF_DIR_URI_KEY, dirUri.toString()).apply()
-
-        // Rescan the selected directory
-        rescanDirectory(dirUri)
-    }
+            // Rescan the selected directory
+            rescanDirectory(dirUri)
+        }
 
     private fun rescanDirectory(dirUri: Uri) {
         val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
